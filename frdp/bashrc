@@ -1,0 +1,22 @@
+
+# User specific aliases and functions
+
+export FRDP_HOME=/opt/forgerock
+export JAVA_HOME=${FRDP_HOME}/ext/java/current
+export MYSQL_HOME=/usr/local/mysql
+export PHP_HOME=${FRDP_HOME}/ext/php
+export M2_HOME=/usr/local/apache-maven
+export SSOADM_HOME=/opt/forgerock/tools/openam/ssoadm-alpha/openam
+export PATH=${FRDP_HOME}/bin:\
+${JAVA_HOME}/bin:\
+${MYSQL_HOME}/bin:\
+${PHP_HOME}/bin:\
+${M2_HOME}/bin:\
+${SSOADM_HOME}/bin:\
+/bin:\
+/usr/bin:\
+/usr/sbin:\
+/sbin:\
+/usr/local/bin
+
+export PS1="Vbox:R2.0% "

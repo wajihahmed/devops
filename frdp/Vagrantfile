@@ -1,0 +1,49 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+VAGRANTFILE_API_VERSION = "2"
+
+$dmf ||= `VBoxManage list systemproperties | grep "^Default machine folder" | cut -f2 -d:`.strip
+
+
+Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
+
+    config.vm.box = "wahmed/ubuntu1604"
+    config.vm.box_check_update = false
+    config.vm.hostname = "iam.forgerockdemo.com"
+    config.vm.network "private_network", ip: "192.168.50.18", auto_config: false
+    config.vm.post_up_message = "Use command 'vagrant ssh' to login"
+    config.vm.synced_folder ".", "/vagrant", disabled: true
+  
+    config.vm.provider "virtualbox" do |vb|
+	vb.gui = false
+        vb.customize [ 'modifyvm', :id, '--name', 'FRDP.Next' ]
+  	vb.customize [ 'modifyvm', :id, '--memory', '1024', '--cpus', '2' ]
+        vb.customize [ 'createmedium', 'disk', '--format', 'VDI', '--filename', "#{$dmf}/FRDP.Next/zfs-frdp.vdi", '--size', 20480]
+        vb.customize [ 'storageattach', :id, '--storagectl', 'SATA', '--port', 1, '--device', 0, '--type', 'hdd', '--medium', "#{$dmf}/FRDP.Next/zfs-frdp.vdi"]
+    end
+
+    # https://github.com/dotless-de/vagrant-vbguest
+    # config.vbguest.no_install = true
+    #config.vbguest.auto_update = false
+    #config.vbguest.no_remote = true
+    #config.vbguest.auto_reboot = false
+
+    system("
+      if [ #{ARGV[0]} = 'up' ]; then
+        #echo 'You are doing vagrant up and can execute your script'
+        vagrant scp bashrc /tmp 
+      fi
+    ")
+
+    config.vm.provision "shell", path: "bootstrap.sh"
+
+    #config.vm.provision :docker do |d|
+	# d.pull_images "ubuntu"
+	# d.run "openam"
+    	#d.ports = ['80:80']
+    	#d.name = 'drupal-container'
+	#d.vagrant_vagrantfile = "host/Vagrantfile"
+    #end
+end
+
